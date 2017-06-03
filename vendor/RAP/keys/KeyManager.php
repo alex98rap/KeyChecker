@@ -13,10 +13,10 @@ use RAP\db\DataBase;
 class KeyManager
 {
     public $key_id;
-    public $app_id;
     public $key_text;
-    public $activated_time;
+    public $app_id;
     public $is_activated;
+    public $activated_time;
 
     /**
      * KeyManager constructor.
@@ -46,7 +46,7 @@ class KeyManager
         return new self($db->changeTable('sl_keys')->select(['*'])->andWhere(['app_id' => $appId])->one());
     }*/
 
-    public static function findKey($key)
+    protected static function findKey($key)
     {
         $db = new DataBase();
         return new self($db->changeTable('sl_key_list')->select(['*'])->andWhere(['key_text' => $key])->one());
@@ -65,5 +65,35 @@ class KeyManager
             }
         }
         return false;
+    }
+
+    public static function register($key_text)
+    {
+        $db = new DataBase();
+        $key = self::findKey($key_text);
+        if ($key !== false && $key->is_activated == 0) {
+            $db->changeTable('sl_key_list')->andWhere([
+                'key_text' => $key_text
+            ])->update([
+                'activated' => 1
+            ]);
+            $app_id = md5($key_text . time());
+            $db->changeTable('sl_keys')->add([
+                'key_text' => $key_text,
+                'app_id' => $app_id,
+                'activated_time' => time()
+            ]);
+            $app = $db->changeTable('sl_keys')->select(['*'])->andWhere([
+                'app_id' => $app_id,
+                'key_text' => $key_text
+            ])->one();
+            return new self([
+                'key_id' => $app['key_id'],
+                'key_text' => $app['key_text'],
+                'app_id' => $app['app_id'],
+                'is_activated' => 1,
+                'activated_time' => $app['activated_time']
+            ]);
+        }
     }
 }

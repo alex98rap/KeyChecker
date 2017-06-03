@@ -157,24 +157,6 @@ class DataBase
     }
 
     /**
-     * @param array $fields
-     * @param array $values
-     * @return mixed
-     */
-    public function add($fields = [], $values = [])
-    {
-        $fieldString = '';
-        foreach ($fields as $field) {
-            $fieldString .= !empty($fieldString) ? ",`{$field}`" : "`{$field}`";
-        }
-        $valueString = '';
-        foreach ($values as $value) {
-            $valueString .= !empty($valueString) ? ",`{$value}`" : "`{$value}`";
-        }
-        return $this->MySQLi->query("INSERT INTO ({$fieldString}) VALUES ({$valueString})");
-    }
-
-    /**
      * @return mixed
      */
     public function delete()
@@ -195,5 +177,20 @@ class DataBase
         }
         $where = !empty($this->conditions) ? $this->conditions : 1;
         return $this->MySQLi->query("UPDATE {$this->table} SET {$sets} WHERE {$where}");
+    }
+
+    /**
+     * @param array $params
+     * @return bool|\mysqli_result
+     */
+    public function add($params = [])
+    {
+        $fields = '';
+        $values = '';
+        foreach ($params as $field => $value) {
+            $fields .= !empty($fields) ? ",`{$field}`" : "`{$field}`";
+            $values .= !empty($values) ? ",'{$value}'" : "'{$value}'";
+        }
+        return $this->MySQLi->query("INSERT INTO `{$this->table}` ({$fields}) VALUES ({$values})");
     }
 }
