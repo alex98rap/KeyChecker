@@ -36,7 +36,7 @@ class ArrayConverter
 
     public function asXML()
     {
-        return $this->toXML($this->array);
+        return "<?xml version=\"1.1\" encoding=\"UTF-8\" ?>" . $this->toXML($this->array);
     }
 
     protected function toXML($array = [])
@@ -47,7 +47,7 @@ class ArrayConverter
                 $item = 'item_' . $item;
             }
             $value = !is_array($value) ? $value : $this->toXML($value);
-            $result .= "<{$item}>{$value}</{$item}>\r\n";
+            $result .= "<{$item}>{$value}</{$item}>";
         }
         return $result;
     }
