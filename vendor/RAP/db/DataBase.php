@@ -173,10 +173,11 @@ class DataBase
     {
         $sets = '';
         foreach ($params as $param => $value) {
-            $sets = !empty($sets) ? ",`{$param}`='{$value}'" : "`{$param}`='{}$value'";
+            $sets = !empty($sets) ? ",`{$param}`='{$value}'" : "`{$param}`='{$value}'";
         }
         $where = !empty($this->conditions) ? $this->conditions : 1;
-        return $this->MySQLi->query("UPDATE {$this->table} SET {$sets} WHERE {$where}");
+        $query = "UPDATE `{$this->table}` SET {$sets} WHERE {$where}";
+        return $this->MySQLi->query($query);
     }
 
     /**
