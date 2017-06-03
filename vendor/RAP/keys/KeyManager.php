@@ -16,6 +16,7 @@ class KeyManager
     public $app_id;
     public $key_text;
     public $activated_time;
+    public $is_activated;
 
     /**
      * KeyManager constructor.

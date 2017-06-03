@@ -9,7 +9,8 @@
 spl_autoload_register(
     function ($class) {
         $alias_array = [
-            'RAP' => __DIR__
+            'RAP' => __DIR__ . '/RAP',
+            'app' => __DIR__ . '/..'
         ];
         $alias_real_length = 0;
         $class_file_alias = $_SERVER['DOCUMENT_ROOT'];

@@ -30,7 +30,7 @@ class DataBase
     public function __construct($params = [])
     {
         if (empty($params)) {
-            $params = include __DIR__ . '/../../config/db.php';
+            $params = include __DIR__ . '/../../../config/db.php';
         }
         foreach ($params as $param => $value) {
             if (property_exists($this, $param)) {
