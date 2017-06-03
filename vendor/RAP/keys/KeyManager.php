@@ -71,29 +71,31 @@ class KeyManager
     {
         $db = new DataBase();
         $key = self::findKey($key_text);
-        if ($key !== false && $key->is_activated == 0) {
-            $db->changeTable('sl_key_list')->andWhere([
-                'key_text' => $key_text
+        if ($key !== false && $key->key_id > 0 && $key->is_activated == 0) {
+            if (!$db->changeTable('sl_key_list')->andWhere([
+                'key_id' => $key->key_id,
+                'key_text' => $key->key_text
             ])->update([
-                'activated' => 1
-            ]);
+                'is_activated' => 1
+            ])) return false;
             $app_id = md5($key_text . time());
-            $db->changeTable('sl_keys')->add([
+            if (!$db->changeTable('sl_keys')->add([
                 'key_text' => $key_text,
                 'app_id' => $app_id,
                 'activated_time' => time()
-            ]);
-            $app = $db->changeTable('sl_keys')->select(['*'])->andWhere([
-                'app_id' => $app_id,
-                'key_text' => $key_text
-            ])->one();
+            ])) return false;
+            $app = self::check($app_id, $key_text);
+            if (empty($app)) {
+                return false;
+            }
             return new self([
-                'key_id' => $app['key_id'],
-                'key_text' => $app['key_text'],
-                'app_id' => $app['app_id'],
+                'key_id' => $app->key_id,
+                'key_text' => $app->key_text,
+                'app_id' => $app->app_id,
                 'is_activated' => 1,
-                'activated_time' => $app['activated_time']
+                'activated_time' => $app->activated_time
             ]);
         }
+        return false;
     }
 }

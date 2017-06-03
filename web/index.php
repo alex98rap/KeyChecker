@@ -35,21 +35,51 @@ switch ($action) {
             $response = [
                 'error' => [
                     'code' => 1,
-                    'descriptions' => 'One or several of parameters has not be passed'
+                    'descriptions' => 'One or several of parameters is not be passed'
                 ]
             ];
         }
-        echo json_encode([
-            'response' => $response
-        ]);
+        break;
+    case 'register':
+        if ($key !== null) {
+            $app = KeyManager::register($key);
+            if ($app !== false) {
+                $response = [
+                    'success' => [
+                        'key_id' => $app->key_id,
+                        'key_text' => $app->key_text,
+                        'app_id' => $app->app_id,
+                        'is_activated' => $app->is_activated,
+                        'activated_time' => $app->activated_time,
+                        'descriptions' => 'Application is successfully registered'
+                    ]
+                ];
+            } else {
+                $response = [
+                    'error' => [
+                        'code' => 99,
+                        'descriptions' => 'Application cannot be registered: key already activated or doesn\'t exists'
+                    ]
+                ];
+            }
+        } else {
+            $response = [
+                'error' => [
+                    'code' => 1,
+                    'descriptions' => 'One or several of parameters is not be passed'
+                ]
+            ];
+        }
         break;
     default:
-        echo json_encode([
-            'response' => [
-                'error' => [
-                    'code' => -1,
-                    'descriptions' => 'Action is needed'
-                ]
+        $response = [
+            'error' => [
+                'code' => -1,
+                'descriptions' => 'Action is needed'
             ]
-        ]);
+        ];
+        break;
 }
+echo json_encode([
+    'response' => $response
+]);
