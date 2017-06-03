@@ -9,10 +9,12 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use RAP\keys\KeyManager;
+use RAP\converters\ArrayConverter;
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : null;
 $key = isset($_REQUEST['key']) ? $_REQUEST['key'] : null;
 $app = isset($_REQUEST['app']) ? $_REQUEST['app'] : null;
+$format = (isset($_REQUEST['format']) && in_array(strtolower($_REQUEST['format']), ['json', 'xml'])) ? strtolower($_REQUEST['format']) : 'json';
 switch ($action) {
     case 'check':
         if ($key !== null && $app !== null) {
@@ -80,6 +82,9 @@ switch ($action) {
         ];
         break;
 }
-echo json_encode([
+
+$result = new ArrayConverter([
     'response' => $response
 ]);
+
+echo $format == 'json' ? $result->asJSON() : $result->asXML();
